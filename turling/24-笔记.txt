@@ -1,0 +1,16 @@
+
+定位：
+
+xhr   encrypt hook
+
+
+this
+   e  最上面的东西     创建实力的方法    类
+      定位方式  new e()      =e
+
+
+      属性定位   this
+         通过属性名    通过比较特殊的属性名   多下断点排查
+
+      方法定位 prototype（可理解为父类的方法和属性）
+      找到方法的   functionlocation   进入方法    看在哪里获取到
