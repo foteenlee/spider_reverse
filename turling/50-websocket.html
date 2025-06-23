@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input id="box" type="text">
+<button onclick="aaa()"> giao </button>
+
+<script>
+    // var client = new webSocket('ws://127.0.0.1:8080');
+    //
+    // client.onerror = function () {
+    //     console.log("connection failed");
+    // }
+    //
+    // client.onopen = function () {
+    //     console.log("connection opened");
+    // }
+    //
+    // client.onmessage = function (event) {
+    //     console.log(event.data);
+    // }
+    //
+    // client.onclose = function () {
+    //     console.log("connection closed");
+    // }
+    //
+    // function aaa() {
+    //     var text = document.getElementById("box").value
+    //     client.send(text)
+    // }
+
+    var client = null;
+var isConnected = false;
+
+function connectWebSocket() {
+    client = new WebSocket('ws://127.0.0.1:8080');
+    client.onopen = function() {
+        isConnected = true;
+        console.log('链接成功....');
+    };
+    client.onerror = function() {
+        console.log('链接失败.........');
+    };
+    client.onclose = function() {
+        isConnected = false;
+        console.log('链接关闭........');
+    };
+    client.onmessage = function(event) {
+        console.log('服务器数据:', event.data);
+    };
+}
+
+function aaa() {
+    if (!isConnected) {
+        console.error('WebSocket 未连接！');
+        return;
+    }
+    var text = document.getElementById('box').value;
+    client.send(text);
+}
+
+// 初始化连接
+connectWebSocket();
+
+
+
+</script>
+</body>
+</html>
