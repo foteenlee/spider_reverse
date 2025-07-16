@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片查看器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .shadow-custom {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
+            .image-container {
+                height: calc(100vh - 16rem);
+            }
+            .image-fullscreen {
+                height: 100vh !important;
+                width: 100vw !important;
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex flex-col text-white">
+    <!-- 导航栏 -->
+    <nav class="bg-gray-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold">随机图片查看器</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="imageCounter" class="text-gray-300">1 / 5</span>
+                    <button id="saveBtn" class="bg-secondary hover:bg-secondary/90 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                        <i class="fa fa-download mr-2"></i> 保存图片
+                    </button>
+                    <button id="toggleFullscreen" class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                        <i class="fa fa-expand mr-2"></i> 全屏查看
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-5xl">
+            <!-- 图片展示区 -->
+            <div id="imageContainer" class="relative bg-gray-800 rounded-xl overflow-hidden shadow-custom image-container flex items-center justify-center cursor-pointer">
+                <img id="displayedImage" src="https://picsum.photos/800/600?random=1" alt="展示的图片"
+                     class="max-h-full max-w-full object-contain fade-in">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div class="p-6 text-white">
+                        <h3 id="imageTitle" class="text-2xl font-semibold mb-1">图片标题</h3>
+                        <p id="imageDescription" class="text-lg text-gray-300 max-w-3xl">图片描述信息</p>
+                    </div>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                    <div class="bg-black/50 backdrop-blur-sm p-4 rounded-full">
+                        <i class="fa fa-random text-4xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="flex justify-center mt-6">
+                <button id="randomBtn" class="bg-primary hover:bg-primary/90 text-white py-3 px-6 rounded-lg transition-colors duration-200 flex items-center text-lg">
+                    <i class="fa fa-random mr-2"></i> 随机下一张
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>© 2025 随机图片查看器 | 点击图片或按钮获取随机图片</p>
+        </div>
+    </footer>
+
+    <script>
+        // 图片库
+        const images = [
+            { url: "https://picsum.photos/1920/1080?random=1", title: "自然风光", description: "壮观的山脉和湖泊风景" },
+            { url: "https://picsum.photos/1920/1080?random=2", title: "城市建筑", description: "现代都市的建筑之美" },
+            { url: "https://picsum.photos/1920/1080?random=3", title: "野生动物", description: "自由生活在自然环境中的动物" },
+            { url: "https://picsum.photos/1920/1080?random=4", title: "抽象艺术", description: "色彩与形状的创意组合" },
+            { url: "https://picsum.photos/1920/1080?random=5", title: "海洋世界", description: "神秘而美丽的海底景观" },
+            { url: "https://picsum.photos/1920/1080?random=6", title: "森林探险", description: "茂密森林中的自然奇观" },
+            { url: "https://picsum.photos/1920/1080?random=7", title: "沙漠风光", description: "广袤沙漠中的壮丽景色" },
+            { url: "https://picsum.photos/1920/1080?random=8", title: "极地探索", description: "冰天雪地的极地环境" },
+            { url: "https://picsum.photos/1920/1080?random=9", title: "都市夜景", description: "繁华都市的夜晚景观" },
+            { url: "https://picsum.photos/1920/1080?random=10", title: "乡村生活", description: "宁静乡村的生活场景" }
+        ];
+
+        let usedIndices = [];
+        const displayedImage = document.getElementById('displayedImage');
+        const imageTitle = document.getElementById('imageTitle');
+        const imageDescription = document.getElementById('imageDescription');
+        const imageCounter = document.getElementById('imageCounter');
+        const randomBtn = document.getElementById('randomBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const toggleFullscreen = document.getElementById('toggleFullscreen');
+        const imageContainer = document.getElementById('imageContainer');
+
+        // 初始化显示第一张随机图片
+        loadRandomImage();
+
+        // 随机下一张图片
+        randomBtn.addEventListener('click', loadRandomImage);
+        imageContainer.addEventListener('click', loadRandomImage);
+
+        // 保存图片
+        saveBtn.addEventListener('click', () => {
+            const imgURL = displayedImage.src;
+            const fileName = `image_${Date.now()}.jpg`;
+
+            // 创建临时链接下载图片
+            const link = document.createElement('a');
+            link.href = imgURL;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // 切换全屏模式
+        toggleFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                imageContainer.requestFullscreen().catch(err => {
+                    console.error(`全屏请求失败: ${err.message}`);
+                });
+                toggleFullscreen.innerHTML = '<i class="fa fa-compress mr-2"></i> 退出全屏';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+                toggleFullscreen.innerHTML = '<i class="fa fa-expand mr-2"></i> 全屏查看';
+            }
+        });
+
+        // 监听全屏状态变化
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            if (document.fullscreenElement) {
+                toggleFullscreen.innerHTML = '<i class="fa fa-compress mr-2"></i> 退出全屏';
+            } else {
+                toggleFullscreen.innerHTML = '<i class="fa fa-expand mr-2"></i> 全屏查看';
+            }
+        }
+
+        // 加载随机图片
+        function loadRandomImage() {
+            // 检查是否所有图片都已使用
+            if (usedIndices.length >= images.length) {
+                usedIndices = []; // 重置已使用索引
+            }
+
+            let randomIndex;
+            // 确保不重复
+            do {
+                randomIndex = Math.floor(Math.random() * images.length);
+            } while (usedIndices.includes(randomIndex));
+
+            usedIndices.push(randomIndex);
+
+            // 图片切换动画
+            displayedImage.classList.remove('fade-in');
+            void displayedImage.offsetWidth; // 触发重绘
+            displayedImage.classList.add('fade-in');
+
+            // 更新图片显示
+            const image = images[randomIndex];
+            displayedImage.src = image.url;
+            displayedImage.alt = image.title;
+            imageTitle.textContent = image.title;
+            imageDescription.textContent = image.description;
+            imageCounter.textContent = `${usedIndices.length} / ${images.length}`;
+        }
+
+        // 添加键盘导航支持
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') { // 空格键
+                loadRandomImage();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen.click();
+            } else if (e.key === 'Escape') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            } else if (e.key === 's' || e.key === 'S') {
+                saveBtn.click();
+            }
+        });
+
+        // 窗口大小变化时调整图片
+        window.addEventListener('resize', () => {
+            if (!document.fullscreenElement) {
+                imageContainer.style.height = 'calc(100vh - 16rem)';
+            }
+        });
+    </script>
+</body>
+</html>
