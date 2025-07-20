@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片浏览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .image-container {
+            max-width: 90%;
+            max-height: 75vh;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .fullscreen-btn {
+            background-color: #2196F3;
+        }
+
+        .fullscreen-btn:hover {
+            background-color: #0b7dda;
+        }
+
+        .download-btn {
+            background-color: #f44336;
+        }
+
+        .download-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <img src="{{ url_for('serve_image', filename=imagename) }}" alt="当前图片">
+    </div>
+
+    <div class="controls">
+        <button onclick="window.location.reload()">下一张</button>
+        <button id="fullscreen-toggle" class="fullscreen-btn" onclick="toggleFullScreen()">全屏显示</button>
+        <button class="download-btn" onclick="downloadImage('{{ url_for('serve_image', filename=imagename) }}')">下载图片</button>
+    </div>
+
+    <script>
+        // 全屏状态变量
+        let isFullscreen = false;
+
+        // 全屏切换功能
+        function toggleFullScreen() {
+            const elem = document.querySelector('.image-container');
+            const fullscreenBtn = document.getElementById('fullscreen-toggle');
+
+            if (!document.fullscreenElement) {
+                // 进入全屏
+                elem.requestFullscreen().catch(err => {
+                    alert(`全屏请求出错: ${err.message}`);
+                });
+                fullscreenBtn.textContent = '退出全屏';
+                isFullscreen = true;
+            } else {
+                // 退出全屏
+                document.exitFullscreen();
+                fullscreenBtn.textContent = '全屏显示';
+                isFullscreen = false;
+            }
+        }
+
+        // 监听全屏状态变化
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            const fullscreenBtn = document.getElementById('fullscreen-toggle');
+            isFullscreen = !!document.fullscreenElement;
+            fullscreenBtn.textContent = isFullscreen ? '退出全屏' : '全屏显示';
+        }
+
+        // 下载功能
+        function downloadImage(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = '{{ imagename }}';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
