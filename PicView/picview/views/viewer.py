@@ -1,10 +1,11 @@
 import os, random
 from flask import Blueprint, render_template, send_from_directory, current_app
+from ..import UPLOAD_FOLDER
 
 vw = Blueprint('vw', __name__)
 
 # 配置图片文件夹路径
-UPLOAD_FOLDER = 'static/images'
+# UPLOAD_FOLDER = 'static/images'
 
 # 确保图片文件夹存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
