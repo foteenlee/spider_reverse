@@ -77,13 +77,13 @@
 </head>
 <body>
     <div class="image-container">
-        <img src="{{ url_for('serve_image', filename=imagename) }}" alt="当前图片">
+        <img src="{{ url_for('vw.serve_image', filename=imagename) }}" alt="当前图片">
     </div>
 
     <div class="controls">
         <button onclick="window.location.reload()">下一张</button>
         <button id="fullscreen-toggle" class="fullscreen-btn" onclick="toggleFullScreen()">全屏显示</button>
-        <button class="download-btn" onclick="downloadImage('{{ url_for('serve_image', filename=imagename) }}')">下载图片</button>
+        <button class="download-btn" onclick="downloadImage('{{ url_for('vw.serve_image', filename=imagename) }}')">下载图片</button>
     </div>
 
     <script>

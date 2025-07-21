@@ -8,5 +8,6 @@ def create_app():
 
     from .views import viewer
     app.register_blueprint(viewer.vw)
+    app.config['UPLOAD_FOLDER'] = "static/images"
 
     return app

@@ -5,7 +5,6 @@ vw = Blueprint('vw', __name__)
 
 # 配置图片文件夹路径
 UPLOAD_FOLDER = 'static/images'
-# vw.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 确保图片文件夹存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
